@@ -1,0 +1,7 @@
+<% if (isDevelopment) { %>
+<script type="module" src="/src/assets/js/library.js"></script>
+<script type="module" src="/src/assets/js/main.js"></script>
+<% } else { %>
+<script type="module" src="<%= assetBasePath %>assets/js/library.js"></script>
+<script type="module" src="<%= assetBasePath %>assets/js/main.js"></script>
+<% } %>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="<%= site.lang %>">
+<head>
+  <% const pageDepth = (pageData.slug || '').split('/').filter(Boolean).length; %>
+  <% const assetBasePath = isDevelopment || site.pathMode !== 'relative' ? '/' : pageDepth === 0 ? './' : '../'.repeat(pageDepth); %>
+  <%- include('../partials/_meta') %>
+  <%- include('../partials/_css', { assetBasePath }) %>
+  <%- include('../partials/_js', { assetBasePath }) %>
+</head>
+<body class="page-<%= pageData.page %>">
+
+  <%- include('../modules/_header') %>
+
+  <main class="main-content">
+    <%- content %>
+  </main>
+
+  <%- include('../modules/_footer') %>
+
+</body>
+</html>

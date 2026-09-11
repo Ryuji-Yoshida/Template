@@ -1,0 +1,46 @@
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "description": "",
+  "repository": "",
+  "author": "RY",
+  "license": "ISC",
+  "type": "module",
+  "packageManager": "pnpm",
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail \"eleventy --watch\" \"vite\"",
+    "build": "pnpm run clean:dist && vite build && eleventy && pnpm run format:dist && pnpm run clean:dist:empty",
+    "preview": "vite preview --outDir dist",
+    "lint": "pnpm run lint:js && pnpm run lint:css",
+    "lint:js": "eslint \"src/**/*.{js,mjs}\" \"*.config.js\" \".eleventy.js\"",
+    "lint:css": "stylelint \"src/**/*.{css,scss}\"",
+    "format:dist": "prettier --write \"dist/**/*.html\"",
+    "clean:dist": "node scripts/clean-dist.mjs",
+    "clean:dist:empty": "node scripts/remove-empty-dirs.mjs",
+    "format": "prettier --write \"src/**/*.{js,json,ejs,scss,css,md}\" \"*.config.js\" \".eleventy.js\""
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "@11ty/eleventy-plugin-ejs": "^1.0.0",
+    "autoprefixer": "^10.4.14",
+    "concurrently": "^10.0.5",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "glob": "^13.0.6",
+    "postcss": "^8.4.24",
+    "prettier": "^3.3.0",
+    "sass": "^1.63.4",
+    "stylelint": "^16.0.0",
+    "stylelint-config-recess-order": "^7.7.0",
+    "stylelint-config-standard-scss": "^13.0.0",
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "@studio-freight/lenis": "^1.0.16",
+    "gsap": "^3.12.1",
+    "jquery": "^4.0.0",
+    "js-cookie": "^3.0.5",
+    "lodash": "^4.17.21",
+    "sumoselect": "^3.4.9"
+  }
+}

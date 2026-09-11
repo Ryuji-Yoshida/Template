@@ -1,0 +1,10 @@
+---
+layout: layouts/_base.ejs
+pagination:
+  data: allPages
+  size: 1
+  alias: pageData
+permalink: "/<%= pageData.slug %>/"
+---
+
+<%- include(`_templates/pages/_${pageData.page}`) %>
