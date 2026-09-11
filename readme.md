@@ -1,23 +1,20 @@
-Markdown
-# 11ty + Vite SSG Development Template
+## 11ty + Vite SSG Development Template
 
 11ty（Eleventy）とViteを組み合わせた、高速な静的サイト制作・SSG開発のためのスターターテンプレートです。
 
-## 特徴
+### 特徴
 
 * **高速ビルド & HMR**: Viteによる快適なローカル開発環境
 * **SSG**: 11ty（Eleventy）を利用したテンプレートエンジンの管理
 * **コード品質管理**: ESLint, Stylelint, Prettier による自動整頓
 * **パッケージ管理**: pnpm (pnpm-workspace)
 
-## ディレクトリ構成
-
-```text
+### ディレクトリ構成
 .
-├── scripts/              # カスタムビルド・クリーンアップ用スクリプト
+├── scripts/             # カスタムビルド・クリーンアップ用スクリプト
 │   ├── clean-dist.mjs
 │   └── remove-empty-dirs.mjs
-├── src/                  # ソースファイル
+├── src/                 # ソースファイル
 │   ├── _data/           # 11ty グローバルデータファイル
 │   ├── _templates/      # レイアウト・パーツテンプレート
 │   ├── assets/          # CSS/SCSS, 画像等
