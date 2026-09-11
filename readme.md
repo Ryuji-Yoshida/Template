@@ -45,15 +45,15 @@ pnpm dev
 pnpm build
 ```
 ##### 4. プレビュー & コードチェック
-ビルド結果（dist）のプレビュー表示
+###### ビルド結果（dist）のプレビュー表示
 ```bash
 pnpm preview
 ```
-コードチェック (ESLint & Stylelint)
+###### コードチェック (ESLint & Stylelint)
 ```bash
 pnpm lint
 ```
-コード自動整形 (Prettier)
+###### コード自動整形 (Prettier)
 ```bash
 pnpm format
 ```
