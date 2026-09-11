@@ -1,10 +1,10 @@
 {
-  "name": "my-project",
+  "name": "Template",
   "version": "1.0.0",
   "description": "",
   "repository": "",
-  "author": "RY",
-  "license": "ISC",
+  "author": "Markup Studio",
+  "license": "MIT",
   "type": "module",
   "packageManager": "pnpm",
   "scripts": {
