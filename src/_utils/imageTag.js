@@ -4,9 +4,11 @@ const resolveImagePath = (imgPath, assetBasePath) => {
   return imgPath.startsWith('http') ? imgPath : `${assetBasePath}assets/images/${imgPath}`;
 };
 
-const buildAttributes = (attrs) => {
+const buildAttributes = (attrs, allowEmpty = []) => {
   return Object.entries(attrs)
-    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .filter(([key, value]) =>
+      value !== undefined && value !== null && (value !== '' || allowEmpty.includes(key)),
+    )
     .map(([key, value]) => ` ${key}="${escapeAttribute(value)}"`)
     .join('');
 };
@@ -45,7 +47,7 @@ const createImageTagHelpers = (assetBasePath = '/') => ({
       ...(className ? { class: className } : {}),
       ...(loading ? { loading: 'lazy' } : {}),
       ...attrs,
-    })}>`;
+    }, ['alt'])}>`;
   },
 });
 
