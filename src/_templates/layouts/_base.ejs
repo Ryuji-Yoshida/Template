@@ -3,19 +3,20 @@
 <head>
   <% const pageDepth = (pageData.slug || '').split('/').filter(Boolean).length; %>
   <% const assetBasePath = isDevelopment || site.pathMode !== 'relative' ? '/' : pageDepth === 0 ? './' : '../'.repeat(pageDepth); %>
+  <% const fn = imageTagHelpers.create(assetBasePath); %>
   <%- include('../partials/_meta') %>
   <%- include('../partials/_css', { assetBasePath }) %>
   <%- include('../partials/_js', { assetBasePath }) %>
 </head>
 <body class="page-<%= pageData.page %>">
 
-  <%- include('../modules/_header') %>
+  <%- include('../modules/_header', { fn }) %>
 
   <main class="main-content">
     <%- content %>
   </main>
 
-  <%- include('../modules/_footer') %>
+  <%- include('../modules/_footer', { fn }) %>
 
 </body>
 </html>

@@ -4,7 +4,15 @@ pagination:
   data: allPages
   size: 1
   alias: pageData
-permalink: "/<%= pageData.slug %>/"
+permalink: "<%= pageData.slug ? '/' + pageData.slug + '/' : '/' %>"
 ---
 
-<%- include(`_templates/pages/_${pageData.page}`) %>
+<%_
+const pageDepth = (pageData.slug || '').split('/').filter(Boolean).length;
+const assetBasePath = isDevelopment || site.pathMode !== 'relative' ? '/' : pageDepth === 0 ? './' : '../'.repeat(pageDepth);
+const fn = imageTagHelpers.create(assetBasePath);
+const pageTemplate = pageData.page.includes('/')
+  ? pageData.page.replace(/\/index$/, '/_index')
+  : `_${pageData.page}`;
+-%>
+<%- include(`_templates/pages/${pageTemplate}`, { fn, assetBasePath }) _%>

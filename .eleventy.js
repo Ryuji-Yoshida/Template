@@ -1,9 +1,13 @@
 import eleventyPluginEjs from '@11ty/eleventy-plugin-ejs';
+import createImageTagHelpers from './src/_utils/imageTag.js';
 
 export default async function (eleventyConfig) {
   const isDevelopment = process.argv.includes('--watch');
 
   eleventyConfig.addGlobalData('isDevelopment', isDevelopment);
+  eleventyConfig.addGlobalData('imageTagHelpers', {
+    create: createImageTagHelpers,
+  });
 
   // EJSプラグインの登録
   eleventyConfig.addPlugin(eleventyPluginEjs);

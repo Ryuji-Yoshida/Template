@@ -38,12 +38,28 @@ export default defineConfig({
       name: 'serve-eleventy-output',
       configureServer(server) {
         server.middlewares.use(async (request, response, next) => {
-          if (request.url !== '/') {
+          const pathname = request.url?.split('?')[0];
+          const outputPath = pathname === '/'
+            ? 'dist/index.html'
+            : pathname?.startsWith('/') && pathname.endsWith('.html')
+              ? `dist${pathname}`
+              : pathname?.startsWith('/')
+                ? `dist${pathname.replace(/\/$/, '')}/index.html`
+                : null;
+
+          if (!outputPath) {
             next();
             return;
           }
 
-          const html = await readFile(resolve(__dirname, 'dist/index.html'), 'utf8');
+          let html;
+          try {
+            html = await readFile(resolve(__dirname, outputPath), 'utf8');
+          } catch {
+            next();
+            return;
+          }
+
           const transformedHtml = await server.transformIndexHtml(request.url, html);
           response.statusCode = 200;
           response.setHeader('Content-Type', 'text/html');
