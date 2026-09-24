@@ -37,6 +37,15 @@ export default defineConfig({
     {
       name: 'serve-eleventy-output',
       configureServer(server) {
+        const distDir = resolve(__dirname, 'dist');
+
+        server.watcher.add(distDir);
+        server.watcher.on('change', (file) => {
+          if (file.startsWith(distDir) && file.endsWith('.html')) {
+            server.ws.send({ type: 'full-reload' });
+          }
+        });
+
         server.middlewares.use(async (request, response, next) => {
           const pathname = request.url?.split('?')[0];
           const outputPath = pathname === '/'
