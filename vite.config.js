@@ -48,13 +48,14 @@ export default defineConfig({
 
         server.middlewares.use(async (request, response, next) => {
           const pathname = request.url?.split('?')[0];
-          const outputPath = pathname === '/'
-            ? 'dist/index.html'
-            : pathname?.startsWith('/') && pathname.endsWith('.html')
-              ? `dist${pathname}`
-              : pathname?.startsWith('/')
-                ? `dist${pathname.replace(/\/$/, '')}/index.html`
-                : null;
+          const outputPath =
+            pathname === '/'
+              ? 'dist/index.html'
+              : pathname?.startsWith('/') && pathname.endsWith('.html')
+                ? `dist${pathname}`
+                : pathname?.startsWith('/')
+                  ? `dist${pathname.replace(/\/$/, '')}/index.html`
+                  : null;
 
           if (!outputPath) {
             next();

@@ -6,8 +6,9 @@ const resolveImagePath = (imgPath, assetBasePath) => {
 
 const buildAttributes = (attrs, allowEmpty = []) => {
   return Object.entries(attrs)
-    .filter(([key, value]) =>
-      value !== undefined && value !== null && (value !== '' || allowEmpty.includes(key)),
+    .filter(
+      ([key, value]) =>
+        value !== undefined && value !== null && (value !== '' || allowEmpty.includes(key)),
     )
     .map(([key, value]) => ` ${key}="${escapeAttribute(value)}"`)
     .join('');
@@ -31,23 +32,21 @@ const createImageTagHelpers = (assetBasePath = '/') => ({
 
   imgTag(imgPath, width, height, options = '') {
     const normalizedOptions = typeof options === 'object' ? options : { alt: options };
-    const {
-      alt = '',
-      className = '',
-      loading = true,
-      attrs = {},
-    } = normalizedOptions;
+    const { alt = '', className = '', loading = true, attrs = {} } = normalizedOptions;
     const src = resolveImagePath(imgPath, assetBasePath);
 
-    return `<img${buildAttributes({
-      src,
-      alt,
-      width,
-      height,
-      ...(className ? { class: className } : {}),
-      ...(loading ? { loading: 'lazy' } : {}),
-      ...attrs,
-    }, ['alt'])}>`;
+    return `<img${buildAttributes(
+      {
+        src,
+        alt,
+        width,
+        height,
+        ...(className ? { class: className } : {}),
+        ...(loading ? { loading: 'lazy' } : {}),
+        ...attrs,
+      },
+      ['alt'],
+    )}>`;
   },
 });
 
