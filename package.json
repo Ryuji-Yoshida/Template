@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "concurrently --kill-others-on-fail \"eleventy --watch\" \"vite\"",
     "build": "pnpm run clean:dist && vite build && eleventy && pnpm run format:dist && pnpm run clean:dist:empty",
+    "build:delivery": "pnpm run clean:dist && vite build --mode delivery && eleventy && pnpm run format:dist:delivery && pnpm run clean:dist:empty",
     "preview": "vite preview --outDir dist",
     "lint": "pnpm run lint:js && pnpm run lint:css",
     "lint:js": "eslint \"src/**/*.{js,mjs}\" \"*.config.js\" \".eleventy.js\"",

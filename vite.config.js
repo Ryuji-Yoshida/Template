@@ -29,115 +29,129 @@ function getInputs() {
   return inputs;
 }
 
-export default defineConfig({
-  root: './',
-  publicDir: 'src/public',
+export default defineConfig(({ mode }) => {
+  const isDelivery = mode === 'delivery';
 
-  plugins: [
-    {
-      name: 'serve-eleventy-output',
-      configureServer(server) {
-        const distDir = resolve(__dirname, 'dist');
+  return {
+    root: './',
+    publicDir: 'src/public',
 
-        server.watcher.add(distDir);
-        server.watcher.on('change', (file) => {
-          if (file.startsWith(distDir) && file.endsWith('.html')) {
-            server.ws.send({ type: 'full-reload' });
-          }
-        });
-
-        server.middlewares.use(async (request, response, next) => {
-          const pathname = request.url?.split('?')[0];
-          const outputPath =
-            pathname === '/'
-              ? 'dist/index.html'
-              : pathname?.startsWith('/') && pathname.endsWith('.html')
-                ? `dist${pathname}`
-                : pathname?.startsWith('/')
-                  ? `dist${pathname.replace(/\/$/, '')}/index.html`
-                  : null;
-
-          if (!outputPath) {
-            next();
-            return;
-          }
-
-          let html;
-          try {
-            html = await readFile(resolve(__dirname, outputPath), 'utf8');
-          } catch {
-            next();
-            return;
-          }
-
-          const transformedHtml = await server.transformIndexHtml(request.url, html);
-          response.statusCode = 200;
-          response.setHeader('Content-Type', 'text/html');
-          response.end(transformedHtml);
-        });
-      },
-    },
-  ],
-
-  resolve: {
-    alias: [
-      { find: /^\/src/, replacement: resolve(__dirname, 'src') },
-      { find: 'jquery', replacement: resolve(__dirname, 'node_modules/jquery') },
-
-      // 【重要】開発サーバー用：/assets/css/*.css の要求を src/assets/scss/*.scss へ接続
+    plugins: [
       {
-        find: /^\/assets\/css\/(.+)\.css$/,
-        replacement: resolve(__dirname, 'src/assets/scss/$1.scss'),
+        name: 'serve-eleventy-output',
+        configureServer(server) {
+          const distDir = resolve(__dirname, 'dist');
+
+          server.watcher.add(distDir);
+          server.watcher.on('change', (file) => {
+            if (file.startsWith(distDir) && file.endsWith('.html')) {
+              server.ws.send({ type: 'full-reload' });
+            }
+          });
+
+          server.middlewares.use(async (request, response, next) => {
+            const pathname = request.url?.split('?')[0];
+            const outputPath =
+              pathname === '/'
+                ? 'dist/index.html'
+                : pathname?.startsWith('/') && pathname.endsWith('.html')
+                  ? `dist${pathname}`
+                  : pathname?.startsWith('/')
+                    ? `dist${pathname.replace(/\/$/, '')}/index.html`
+                    : null;
+
+            if (!outputPath) {
+              next();
+              return;
+            }
+
+            let html;
+            try {
+              html = await readFile(resolve(__dirname, outputPath), 'utf8');
+            } catch {
+              next();
+              return;
+            }
+
+            const transformedHtml = await server.transformIndexHtml(request.url, html);
+            response.statusCode = 200;
+            response.setHeader('Content-Type', 'text/html');
+            response.end(transformedHtml);
+          });
+        },
       },
     ],
-  },
 
-  build: {
-    outDir: 'dist',
-    emptyOutDir: false,
-    assetsInlineLimit: 0,
-    modulePreload: false,
+    resolve: {
+      alias: [
+        { find: /^\/src/, replacement: resolve(__dirname, 'src') },
+        { find: 'jquery', replacement: resolve(__dirname, 'node_modules/jquery') },
 
-    rollupOptions: {
-      // SCSS と JS を明示的にビルドエントリーとして渡す
-      input: getInputs(),
-
-      output: {
-        // エントリー JS の出力先指定
-        entryFileNames: (chunkInfo) => {
-          // SCSS ビルド時に生成される一次ダミー JS の退避処理
-          if (chunkInfo.name.startsWith('scss/')) {
-            return 'assets/js/_temp/[name].js';
-          }
-          return 'assets/js/[name].js';
+        // 【重要】開発サーバー用：/assets/css/*.css の要求を src/assets/scss/*.scss へ接続
+        {
+          find: /^\/assets\/css\/(.+)\.css$/,
+          replacement: resolve(__dirname, 'src/assets/scss/$1.scss'),
         },
+      ],
+    },
 
-        chunkFileNames: 'assets/js/[name].js',
-
-        // JS の個別分離設定
-        manualChunks(id) {
-          const normalizedId = id.replace(/\\/g, '/');
-          if (normalizedId.includes('/src/assets/js/')) {
-            const relativePath = normalizedId.split('/src/assets/js/')[1];
-            if (!relativePath.includes('/') && !relativePath.startsWith('_')) {
-              return relativePath.replace(/\.[^/.]+$/, '');
-            }
-          }
-        },
-
-        // SCSS から抽出された CSS の出力先制御 (scss/style ➔ assets/css/style.css)
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
-            const nameWithoutScss = assetInfo.name.replace(/^scss\//, '');
-            return `assets/css/${nameWithoutScss}`;
-          }
-          return 'assets/[name].[ext]';
+    css: {
+      preprocessorOptions: {
+        scss: {
+          outputStyle: isDelivery ? 'expanded' : 'compressed',
         },
       },
     },
-  },
-  server: {
-    port: 3000,
-    open: true,
-  },
+
+    build: {
+      outDir: 'dist',
+      emptyOutDir: false,
+      assetsInlineLimit: 0,
+      modulePreload: false,
+      minify: !isDelivery,
+      cssMinify: !isDelivery,
+
+      rollupOptions: {
+        // SCSS と JS を明示的にビルドエントリーとして渡す
+        input: getInputs(),
+
+        output: {
+          // エントリー JS の出力先指定
+          entryFileNames: (chunkInfo) => {
+            // SCSS ビルド時に生成される一次ダミー JS の退避処理
+            if (chunkInfo.name.startsWith('scss/')) {
+              return 'assets/js/_temp/[name].js';
+            }
+            return 'assets/js/[name].js';
+          },
+
+          chunkFileNames: 'assets/js/[name].js',
+
+          // JS の個別分離設定
+          manualChunks(id) {
+            const normalizedId = id.replace(/\\/g, '/');
+            if (normalizedId.includes('/src/assets/js/')) {
+              const relativePath = normalizedId.split('/src/assets/js/')[1];
+              if (!relativePath.includes('/') && !relativePath.startsWith('_')) {
+                return relativePath.replace(/\.[^/.]+$/, '');
+              }
+            }
+          },
+
+          // SCSS から抽出された CSS の出力先制御 (scss/style ➔ assets/css/style.css)
+          assetFileNames: (assetInfo) => {
+            if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+              const nameWithoutScss = assetInfo.name.replace(/^scss\//, '');
+              return `assets/css/${nameWithoutScss}`;
+            }
+            return 'assets/[name].[ext]';
+          },
+        },
+      },
+    },
+    server: {
+      port: 3000,
+      open: true,
+    },
+  };
 });
