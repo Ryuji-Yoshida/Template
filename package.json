@@ -10,11 +10,13 @@
   "scripts": {
     "dev": "concurrently --kill-others-on-fail \"eleventy --watch\" \"vite\"",
     "build": "pnpm run clean:dist && vite build && eleventy && pnpm run format:dist && pnpm run clean:dist:empty",
+    "build:delivery": "pnpm run clean:dist && vite build --mode delivery && eleventy && pnpm run format:dist:delivery && pnpm run clean:dist:empty",
     "preview": "vite preview --outDir dist",
     "lint": "pnpm run lint:js && pnpm run lint:css",
     "lint:js": "eslint \"src/**/*.{js,mjs}\" \"*.config.js\" \".eleventy.js\"",
     "lint:css": "stylelint \"src/**/*.{css,scss}\"",
     "format:dist": "prettier --write \"dist/**/*.html\"",
+    "format:dist:delivery": "prettier --write \"dist/**/*.{html,css,js}\"",
     "clean:dist": "node scripts/clean-dist.mjs",
     "clean:dist:empty": "node scripts/remove-empty-dirs.mjs",
     "format": "prettier --write \"src/**/*.{js,json,ejs,scss,css,md}\" \"*.config.js\" \".eleventy.js\""
