@@ -12,9 +12,6 @@ export default async function (eleventyConfig) {
   // EJSプラグインの登録
   eleventyConfig.addPlugin(eleventyPluginEjs);
 
-  // src/publicの内容をdist直下へコピー
-  eleventyConfig.addPassthroughCopy({ 'src/public': '/' });
-
   // 監視対象の追加
   eleventyConfig.addWatchTarget('./src/_data/');
 

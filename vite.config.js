@@ -3,13 +3,12 @@ import { resolve, relative, extname, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
 import { readFile } from 'fs/promises';
 import { globSync } from 'glob';
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// src/assets 内の JS/SCSS を自動エントリー化する関数
 function getInputs() {
   const inputs = {};
-  // _ で始まらない js および scss を取得
   const files = globSync('src/assets/{js,scss}/*.{js,scss}').filter(
     (file) => !basename(file).startsWith('_'),
   );
@@ -17,7 +16,6 @@ function getInputs() {
   files.forEach((file) => {
     const normalizedFile = file.replace(/\\/g, '/');
     const relativePath = relative('src/assets', normalizedFile).replace(/\\/g, '/');
-    // 拡張子を除いたキー名（例: 'js/main', 'scss/style', 'scss/top'）
     let key = relativePath.slice(0, -extname(relativePath).length);
     if (key.startsWith('js/')) {
       key = key.slice(3);
@@ -80,14 +78,32 @@ export default defineConfig(({ mode }) => {
           });
         },
       },
+      // ビルド時（build / build:delivery 共通）に画像を自動圧縮
+      ViteImageOptimizer({
+        includePublic: true, // src/public 内の画像も圧縮対象にする
+        logStats: true,      // ビルド時に圧縮率のログを表示
+        png: {
+          quality: 80,
+        },
+        jpeg: {
+          quality: 80,
+        },
+        jpg: {
+          quality: 80,
+        },
+        webp: {
+          quality: 80,
+        },
+        avif: {
+          quality: 80,
+        },
+      }),
     ],
 
     resolve: {
       alias: [
         { find: /^\/src/, replacement: resolve(__dirname, 'src') },
         { find: 'jquery', replacement: resolve(__dirname, 'node_modules/jquery') },
-
-        // 【重要】開発サーバー用：/assets/css/*.css の要求を src/assets/scss/*.scss へ接続
         {
           find: /^\/assets\/css\/(.+)\.css$/,
           replacement: resolve(__dirname, 'src/assets/scss/$1.scss'),
@@ -112,13 +128,10 @@ export default defineConfig(({ mode }) => {
       cssMinify: !isDelivery,
 
       rollupOptions: {
-        // SCSS と JS を明示的にビルドエントリーとして渡す
         input: getInputs(),
 
         output: {
-          // エントリー JS の出力先指定
           entryFileNames: (chunkInfo) => {
-            // SCSS ビルド時に生成される一次ダミー JS の退避処理
             if (chunkInfo.name.startsWith('scss/')) {
               return 'assets/js/_temp/[name].js';
             }
@@ -127,7 +140,6 @@ export default defineConfig(({ mode }) => {
 
           chunkFileNames: 'assets/js/[name].js',
 
-          // JS の個別分離設定
           manualChunks(id) {
             const normalizedId = id.replace(/\\/g, '/');
             if (normalizedId.includes('/src/assets/js/')) {
@@ -138,7 +150,6 @@ export default defineConfig(({ mode }) => {
             }
           },
 
-          // SCSS から抽出された CSS の出力先制御 (scss/style ➔ assets/css/style.css)
           assetFileNames: (assetInfo) => {
             if (assetInfo.name && assetInfo.name.endsWith('.css')) {
               const nameWithoutScss = assetInfo.name.replace(/^scss\//, '');
