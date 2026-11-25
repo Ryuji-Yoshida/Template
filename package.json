@@ -9,8 +9,8 @@
   "packageManager": "pnpm",
   "scripts": {
     "dev": "concurrently --kill-others-on-fail \"eleventy --watch\" \"vite\"",
-    "build": "pnpm run clean:dist && vite build && eleventy && pnpm run format:dist && pnpm run clean:dist:empty",
-    "build:delivery": "pnpm run clean:dist && vite build --mode delivery && eleventy && pnpm run format:dist:delivery && pnpm run clean:dist:empty",
+    "build": "pnpm run clean:dist && eleventy && vite build && pnpm run format:dist && pnpm run clean:dist:empty",
+    "build:delivery": "pnpm run clean:dist && eleventy && vite build --mode delivery && pnpm run format:dist:delivery && pnpm run clean:dist:empty",
     "preview": "vite preview --outDir dist",
     "lint": "pnpm run lint:js && pnpm run lint:css",
     "lint:js": "eslint \"src/**/*.{js,mjs}\" \"*.config.js\" \".eleventy.js\"",
@@ -32,10 +32,13 @@
     "postcss": "^8.4.24",
     "prettier": "^3.3.0",
     "sass": "^1.63.4",
+    "sharp": "^0.35.5",
     "stylelint": "^16.0.0",
     "stylelint-config-recess-order": "^7.7.0",
     "stylelint-config-standard-scss": "^13.0.0",
-    "vite": "^5.0.0"
+    "svgo": "^4.1.0",
+    "vite": "^5.0.0",
+    "vite-plugin-image-optimizer": "^2.0.3"
   },
   "dependencies": {
     "@studio-freight/lenis": "^1.0.16",
